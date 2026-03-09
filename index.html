@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gear.Finder | Setup Configuration</title>
+    
+    <!-- Google Fonts for Agency Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        alabaster: '#f8f9fa',
+                        onyx: '#0f172a', // Richer slate-dark
+                        alert: '#ff5100', // Vibrant neon-orange
+                        alertDark: '#cc4100'
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(40px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Custom Scrollbar for Technical Feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f8f9fa;
+            border-left: 1px solid rgba(0,0,0,0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0f172a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff5100;
+        }
+        
+        /* Blueprint Grid Background */
+        .bg-blueprint {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+        }
+
+        /* Utility Classes for JS Toggling */
+        .manifest-active-img {
+            transform: scale(1.08);
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+        .manifest-inactive-img {
+            filter: grayscale(100%);
+            opacity: 0.7;
+        }
+        
+        .modal-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-closed {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .modal-content-open {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+        .modal-content-closed {
+            transform: scale(0.95) translateY(20px);
+            opacity: 0;
+        }
+
+        .bar-hidden {
+            transform: translateY(100%);
+        }
+        .bar-visible {
+            transform: translateY(0);
+        }
+
+        /* Video Section Styling */
+        .video-wrapper {
+            position: absolute;
+            inset: 0;
+            background: #000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-alabaster text-onyx font-sans selection:bg-alert selection:text-white pb-32 relative z-0">
+
+    <!-- Ambient Blueprint Overlay -->
+    <div class="fixed inset-0 pointer-events-none bg-blueprint z-[-1]"></div>
+
+    <!-- Top Navigation -->
+    <nav class="sticky top-0 z-[100] bg-alabaster/80 backdrop-blur-xl border-b border-onyx/10 shadow-sm transition-all duration-300">
+        <div class="w-full px-6 lg:px-12 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 bg-alert rounded-full animate-pulse-slow shadow-[0_0_10px_rgba(255,81,0,0.8)]"></div>
+                    <span class="font-black text-sm tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-onyx to-onyx/70">Gear.Finder</span>
+                </div>
+                <!-- Functional Tabs -->
+                <div class="hidden md:flex items-center gap-6 font-mono text-[10px] uppercase tracking-[0.2em] text-onyx/50">
+                    <span onclick="switchTab('hardware')" data-tab="hardware" class="nav-tab text-alert font-bold cursor-pointer transition-all duration-300 hover:text-alert">01_Hardware</span>
+                    <span onclick="switchTab('configuration')" data-tab="configuration" class="nav-tab cursor-pointer transition-all duration-300 hover:text-alert">02_Configuration</span>
+                    <span onclick="switchTab('deployment')" data-tab="deployment" class="nav-tab cursor-pointer transition-all duration-300 hover:text-alert">03_Deployment</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-6 font-mono text-[10px] uppercase tracking-[0.2em]">
+                <span class="hidden sm:block text-onyx/40" id="utc-clock">00:00:00 UTC</span>
+                <div class="h-4 w-px bg-onyx/10 hidden sm:block"></div>
+                <div class="flex items-center gap-3 bg-white px-4 py-1.5 rounded-full shadow-sm border border-onyx/5 transition-all duration-300 hover:shadow-md">
+                    <span class="text-onyx/50">Setup:</span>
+                    <span class="font-bold text-alert" id="nav-manifest-units">0 Units</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="w-full max-w-[1600px] mx-auto min-h-[70vh]">
+        
+        <!-- ================= VIEW 01: HARDWARE ================= -->
+        <div id="view-hardware" class="animate-fade-in-up">
+            <!-- Hero Section -->
+            <header class="px-6 lg:px-12 pt-24 pb-32 border-b border-onyx/10 relative overflow-hidden">
+                <!-- Decorative Glow -->
+                <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-alert/5 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+                
+                <div class="max-w-4xl relative z-10">
+                    <p class="font-mono text-[11px] text-alert uppercase tracking-[0.3em] mb-8 flex items-center gap-3 animate-fade-in-up" style="animation-delay: 0.1s;">
+                        <i data-lucide="bar-chart" class="w-4 h-4"></i>
+                        Strategic Hardware Acquisition
+                    </p>
+                    <h1 class="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter uppercase leading-[0.8] mb-12 text-transparent bg-clip-text bg-gradient-to-br from-onyx via-onyx to-onyx/50 animate-fade-in-up" style="animation-delay: 0.2s;">
+                        System<br />Audit.
+                    </h1>
+                    <p class="text-lg md:text-2xl font-medium text-onyx/60 max-w-2xl leading-relaxed animate-fade-in-up" style="animation-delay: 0.3s;">
+                        FX30 Rig
+                    </p>
+                </div>
+            </header>
+
+            <!-- Hardware Grid container (populated by JS) -->
+            <div id="hardware-grid" class="w-full"></div>
+        </div>
+
+        <!-- ================= VIEW 02: CONFIGURATION ================= -->
+        <div id="view-configuration" class="hidden px-6 lg:px-12 pt-24 pb-32 max-w-5xl mx-auto animate-fade-in-up">
+            <header class="mb-16">
+                <p class="font-mono text-[11px] text-alert uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
+                    <i data-lucide="settings" class="w-4 h-4 animate-[spin_4s_linear_infinite]"></i>
+                    Phase 02 / Review
+                </p>
+                <h1 class="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-[0.8] mb-8 text-transparent bg-clip-text bg-gradient-to-br from-onyx to-onyx/50">
+                    Active<br />Config.
+                </h1>
+                <p class="text-lg md:text-xl font-medium text-onyx/60 max-w-2xl leading-relaxed">
+                    Review your selected hardware blocks before generating the final deployment manifest.
+                </p>
+            </header>
+            
+            <div id="config-list" class="mb-12 relative z-10">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- ================= VIEW 03: DEPLOYMENT ================= -->
+        <div id="view-deployment" class="hidden px-6 lg:px-12 pt-24 pb-32 max-w-5xl mx-auto animate-fade-in-up">
+            <header class="mb-16">
+                <p class="font-mono text-[11px] text-alert uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
+                    <i data-lucide="server" class="w-4 h-4"></i>
+                    Phase 03 / Export
+                </p>
+                <h1 class="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-[0.8] mb-8 text-transparent bg-clip-text bg-gradient-to-br from-onyx to-onyx/50">
+                    Deploy<br />Ready.
+                </h1>
+                <p class="text-lg md:text-xl font-medium text-onyx/60 max-w-2xl leading-relaxed">
+                    Final manifest generated. Print or save this blueprint for procurement authorization.
+                </p>
+            </header>
+            
+            <div id="deployment-content">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Manifest Controller Bar -->
+    <div id="manifest-bar" class="fixed bottom-0 left-0 w-full bg-onyx/95 backdrop-blur-xl text-white border-t-2 border-alert shadow-[0_-20px_50px_rgba(255,81,0,0.15)] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] z-[90] bar-hidden">
+        <div class="max-w-[1600px] mx-auto px-6 lg:px-12 h-24 flex items-center justify-between">
+            <div class="flex items-center gap-8 lg:gap-16">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-alert to-alertDark flex items-center justify-center text-white rounded-lg shadow-lg shadow-alert/30">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                    </div>
+                    <div class="hidden sm:block">
+                        <p class="font-mono text-[10px] uppercase tracking-[0.3em] text-white/50 mb-1">Active Setup</p>
+                        <p class="font-sans text-lg font-bold tracking-tight">Configuration Ready</p>
+                    </div>
+                </div>
+                
+                <div class="h-10 w-px bg-white/10 hidden md:block"></div>
+                
+                <div class="flex items-center gap-12">
+                    <div class="flex flex-col">
+                        <span class="font-mono text-[10px] uppercase tracking-[0.3em] text-white/50 mb-1">Hardware</span>
+                        <span class="font-mono text-xl" id="bar-units">0</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-mono text-[10px] uppercase tracking-[0.3em] text-white/50 mb-1">Total Valuation</span>
+                        <span class="font-mono text-xl text-alert font-bold" id="bar-value">₹0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="switchTab('configuration')" class="h-14 px-8 bg-white text-onyx rounded-lg hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] active:scale-[0.98] transition-all duration-300 flex items-center gap-3 group">
+                <span class="font-mono text-[11px] font-bold uppercase tracking-[0.2em]">Finalize Setup</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1.5 text-alert"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- System Modal -->
+    <div id="system-modal" class="fixed inset-0 z-[999] flex items-center justify-center p-4 sm:p-6 lg:p-12 modal-closed transition-opacity duration-500">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-onyx/80 backdrop-blur-xl" onclick="closeModal()"></div>
+        
+        <!-- Modal Content -->
+        <div id="modal-content" class="relative w-full max-w-7xl h-full max-h-[90vh] bg-alabaster rounded-2xl flex flex-col lg:flex-row overflow-hidden shadow-2xl modal-content-closed transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+            <button onclick="closeModal()" class="absolute top-6 right-6 lg:top-8 lg:right-8 z-50 p-3 bg-white/80 backdrop-blur-md rounded-full text-onyx hover:bg-alert hover:text-white hover:scale-110 hover:rotate-90 transition-all duration-300 shadow-sm">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Modal Left: Media Section -->
+            <div class="w-full lg:w-1/2 h-64 lg:h-full relative bg-gradient-to-br from-[#e5e5e0] to-[#d5d5d0] overflow-hidden">
+                <!-- Image Viewer -->
+                <img id="modal-img" src="" alt="" class="w-full h-full object-contain p-8 lg:p-16 mix-blend-multiply filter grayscale hover:grayscale-0 transition-all duration-1000 hover:scale-105">
+                
+                <!-- Video Viewer (Motion Section) -->
+                <div id="modal-video-wrapper" class="video-wrapper">
+                    <div id="video-root" class="video-container"></div>
+                </div>
+
+                <div class="absolute inset-0 border-[1px] border-onyx/5 pointer-events-none mix-blend-overlay"></div>
+                
+                <div class="absolute top-6 left-6 flex flex-col gap-2 z-10">
+                    <span id="modal-id-tag" class="font-mono text-[10px] uppercase tracking-[0.2em] bg-white/90 backdrop-blur-sm px-3 py-1 text-onyx shadow-sm rounded-sm"></span>
+                    <span id="modal-premium-tag" class="hidden font-mono text-[10px] uppercase tracking-[0.2em] bg-gradient-to-r from-alert to-alertDark px-3 py-1 text-white shadow-md rounded-sm">Tier: Premium Grade</span>
+                </div>
+
+                <!-- Video Motion Toggle -->
+                <div class="absolute bottom-6 left-6 z-20 flex bg-white/90 backdrop-blur-md p-1 rounded-lg shadow-lg">
+                    <button onclick="toggleMedia('still')" id="media-still-btn" class="px-4 py-2 font-mono text-[9px] uppercase tracking-[0.2em] rounded-md transition-all bg-onyx text-white">Still</button>
+                    <button onclick="toggleMedia('motion')" id="media-motion-btn" class="px-4 py-2 font-mono text-[9px] uppercase tracking-[0.2em] rounded-md transition-all text-onyx/50 hover:text-onyx">Motion</button>
+                </div>
+            </div>
+
+            <!-- Modal Right: Data -->
+            <div class="w-full lg:w-1/2 h-full overflow-y-auto p-8 lg:p-16 flex flex-col bg-white">
+                <div class="mb-12">
+                    <div class="flex items-center gap-4 mb-6">
+                        <span id="modal-mfg" class="font-mono text-[11px] text-onyx/50 tracking-[0.2em] uppercase border-b border-onyx/10 pb-1"></span>
+                        <span class="font-mono text-[11px] text-alert tracking-[0.2em] uppercase border-b border-alert/30 pb-1 flex items-center gap-2">
+                            <i data-lucide="activity" class="w-3 h-3"></i>
+                            Index: <span id="modal-rating"></span>
+                        </span>
+                    </div>
+                    <h2 id="modal-title" class="text-4xl lg:text-5xl xl:text-6xl font-black text-onyx leading-[0.95] tracking-tighter uppercase mb-6 text-transparent bg-clip-text bg-gradient-to-br from-onyx to-onyx/70"></h2>
+                    <p id="modal-analysis" class="text-base text-onyx/60 leading-relaxed max-w-lg font-medium"></p>
+                </div>
+
+                <div class="mb-12">
+                    <h3 class="font-mono text-[10px] uppercase tracking-[0.3em] text-onyx/40 mb-6 flex items-center gap-2">
+                        <i data-lucide="cpu" class="w-3 h-3"></i> Telemetry / Specifications
+                    </h3>
+                    <div id="modal-telemetry" class="grid grid-cols-1 sm:grid-cols-2 gap-px bg-onyx/5 border border-onyx/5 rounded-lg overflow-hidden shadow-inner">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="mt-auto border-t border-onyx/10 pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
+                    <div>
+                        <p class="font-mono text-[10px] uppercase tracking-[0.3em] text-onyx/40 mb-1">Valuation (INR)</p>
+                        <p class="font-sans text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-onyx to-onyx/80 tracking-tighter">
+                            <span class="text-3xl text-onyx/50">₹</span><span id="modal-price"></span>
+                        </p>
+                    </div>
+                    
+                    <button id="modal-action-btn" class="px-8 h-16 w-full sm:w-auto flex items-center justify-center gap-3 transition-all duration-300 border rounded-xl overflow-hidden relative group">
+                        <div class="absolute inset-0 bg-alert w-0 group-hover:w-full transition-all duration-500 ease-out z-0"></div>
+                        <i id="modal-action-icon" data-lucide="plus" class="w-4 h-4 relative z-10 group-hover:text-white transition-colors duration-300"></i>
+                        <span id="modal-action-text" class="font-mono text-[11px] font-bold uppercase tracking-[0.2em] relative z-10 group-hover:text-white transition-colors duration-300">Add to Setup</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        // Data Schema with Motion Identifiers
+        const HARDWARE_AUDIT = [
+            {
+                phase: "01", classification: "Support Infrastructure", id: "sys-support", icon: "layers",
+                items: [
+                    { id: "tr-hffin-550", mfg: "HIFFIN®", designation: "HF-550 PRO HYBRID", valuation: 6079, indexRating: 4.0, volumeDeployed: 368, verdict: "Vertical Priority", analysis: "A rigorous aluminium support system designed for maximum vertical reach. The hybrid monopod conversion offers critical flexibility in run-and-gun cinematography scenarios.", telemetry: { "Max Elevation": "165cm", "Kinematic Head": "Fluid Ball", "Material": "Aluminium", "Payload Max": "7.0 kg" }, image: "HF.jpg", videoId: "bO1fU58mE_0" },
+                    { id: "tr-dgtk-520", mfg: "DIGITEK®", designation: "DTR 520 BH ALLOY", valuation: 6199, indexRating: 4.3, volumeDeployed: 3762, isStandard: true, verdict: "Market Standard", analysis: "Precision-engineered foldable support optimized for heavy rotation and travel portability. The volume of market deployment indicates extreme reliability under standard conditions.", telemetry: { "Max Elevation": "152cm", "Kinematic Head": "Swivel Pan", "Material": "Aluminium", "Payload Max": "7.0 kg" }, image: "DG.jpg", videoId: "Piv_t_o5h3c" }
+                ]
+            },
+            {
+                phase: "02", classification: "Optical Assemblies", id: "sys-optics", icon: "aperture",
+                items: [
+                    { id: "ln-sgma-1850", mfg: "SIGMA", designation: "18-50mm f/2.8 DC DN", valuation: 43599, indexRating: 4.6, volumeDeployed: 1526, verdict: "Mass/Value Ratio", analysis: "The lightest constant f/2.8 zoom engineered for APS-C sensors. Exceptional center sharpness in a chassis that dramatically reduces gimbal fatigue.", telemetry: { "Aperture": "f/2.8 Const.", "35mm Equiv": "27-75mm", "Architecture": "Contemporary", "Mass": "290g" }, image: "sigma.jpg", videoId: "i-xL8zM7E7o" },
+                    { id: "ln-sony-1655", mfg: "SONY", designation: "E 16-55mm F2.8 G", valuation: 94790, indexRating: 4.7, volumeDeployed: 259, isPremium: true, verdict: "Optical Pinnacle", analysis: "Sony's flagship APS-C optical assembly. Delivers uncompromising G Series resolution from corner to corner, paired with rapid linear motor autofocus.", telemetry: { "Aperture": "f/2.8 Const.", "35mm Equiv": "24-82.5mm", "Architecture": "G Series Pro", "Mass": "494g" }, image: "gmaster.jpg", videoId: "p6T4p4uS9x8" }
+                ]
+            },
+            {
+                phase: "03", classification: "Illumination / Power", id: "sys-illumination", icon: "target",
+                items: [
+                    { id: "fl-gdx-685", mfg: "GODOX", designation: "TT685S SPEEDLIGHT", valuation: 11390, indexRating: 3.2, volumeDeployed: 32, verdict: "Utility Grade", analysis: "Standard radio-controlled illumination module. Utilizes ubiquitous AA power cells, ensuring global operational readiness without specialized charging infrastructure.", telemetry: { "Power Source": "4x AA Cell", "Op. Window": "2-4 Hours", "Sync": "HSS Native", "Guide No.": "60m" }, image: "TT685S SPEEDLIGHT.jpg", videoId: "8Z0u0u08_0Y" },
+                    { id: "fl-gdx-860", mfg: "GODOX", designation: "V860IIIS V-SERIES", valuation: 17067, indexRating: 4.1, volumeDeployed: 34, isPremium: true, verdict: "Cycle Efficiency", analysis: "Professional power pack architecture. The integrated Li-ion battery provides 480 full-power discharges and vastly superior sub-1.5s recycle times.", telemetry: { "Power Source": "Li-ion Pack", "Op. Window": "4-6 Hours", "Cycle Time": "< 1.5s", "Guide No.": "60m" }, image: "V860IIIS V-SERIES.jpg", videoId: "K6G5Y8XzN0U" }
+                ]
+            },
+            {
+                phase: "04", classification: "Peripheral Systems", id: "sys-peripherals", icon: "cpu",
+                items: [
+                    { id: "lt-ulnzi-rgb", mfg: "ULANZI", designation: "MAG-RGB COMPACT", valuation: 2445, indexRating: 4.4, volumeDeployed: 1532, verdict: "Tactical Accent", analysis: "Handheld 360° chromatic light for tactical accents. Magnetic backplate allows for rapid deployment on any ferrous environmental surface.", telemetry: { "Output": "360° RGB", "Endurance": "2.5 Hours", "Mount": "Magnetic", "I/O": "USB-C" }, image: "ULANZI.jpg", videoId: "7m_U5_k8V8I" },
+                    { id: "mn-flwrld-f5", mfg: "FEELWORLD", designation: "F5 PRO X 5.5\"", valuation: 16499, indexRating: 4.0, volumeDeployed: 8, verdict: "Daylight Visibility", analysis: "High-luminance external monitoring array. 1600 nits output ensures critical focus checking remains viable under direct solar interference.", telemetry: { "Luminance": "1600 nits", "Diagonal": "5.5 Inch", "Color Math": "3D LUT", "Power": "DC/F970" }, image: "FEELWORLD.jpg", videoId: "mNly0N29j98" }
+                ]
+            },
+            {
+                phase: "05", classification: "Storage / Media", id: "sys-storage", icon: "database",
+                items: [
+                    { id: "st-oric-eva", mfg: "ORICO®", designation: "EVA SD CARD CASE", valuation: 900, indexRating: 4.2, volumeDeployed: 1807, verdict: "Weather Sealed", analysis: "High-density EVA foam protection for critical media storage. Engineered to withstand significant environmental impact while maintaining a compact tactical profile.", telemetry: { "Capacity": "12 SD Units", "Protection": "Water/Dust", "Material": "EVA Hybrid", "Mass": "90g" }, image: "card.jpg", videoId: "f9N6lWp3u_k" }
+                ]
+            },
+            {
+                phase: "06", classification: "Rigging / Armor", id: "sys-rigging", icon: "frame",
+                items: [
+                    { id: "rg-smrg-4183", mfg: "SMALLRIG®", designation: "CAGE 4183 (FX3/30)", valuation: 10400, indexRating: 4.8, volumeDeployed: 622, isPremium: true, verdict: "Pro CNC", analysis: "Professional grade CNC aluminium exoskeleton. Features dedicated HDMI cable clamping and integrated NATO rails for rapid modular expansion.", telemetry: { "Build": "Aluminium CNC", "Armor": "Full Frame", "I/O Protect": "HDMI Clamp", "Compatibility": "FX3 / FX30" }, image: "cage.jpg", videoId: "R_F51Tz8p-8" },
+                    { id: "rg-hfin-cage", mfg: "HIFFIN®", designation: "FX30 METAL CAGE", valuation: 4099, indexRating: 4.0, volumeDeployed: 40, verdict: "Budget Entry", analysis: "Affordable alloy protection array. Offers standard mounting points and essential HDMI security for price-sensitive operational setups.", telemetry: { "Build": "Aluminium", "Armor": "Full Frame", "I/O Protect": "Included", "Mass": "165g" }, image: "hiffin cage.jpg", videoId: "X_Y-123456" }
+                ]
+            },
+            {
+                phase: "07", classification: "Tactical Transport", id: "sys-transport", icon: "briefcase",
+                items: [
+                    { id: "bg-knfc-beta", mfg: "K&F CONCEPT®", designation: "BETA 20L BACKPACK", valuation: 9637, indexRating: 5.0, volumeDeployed: 206, isPremium: true, verdict: "Max Protection", analysis: "High-density abrasion-resistant fabric with specialized thick internal padding. Designed for long-range deployment of a full FX30 kit plus secondary optics.", telemetry: { "Volume": "20 Liters", "Capacity": "1 Cam / 4 Lens", "Protection": "Rain Cover Inc.", "Build": "Thick Pad" }, image: "KON.jpg", videoId: "V_Pz_2024" },
+                    { id: "bg-sidr-water", mfg: "SIDRUM®", designation: "WATERPROOF BACKPACK", valuation: 1999, indexRating: 4.2, volumeDeployed: 175, verdict: "Basic Utility", analysis: "Standard polyester transport solution. Provides essential organization and moisture resistance for light urban reconnaissance.", telemetry: { "Volume": "Standard", "Capacity": "1 Cam / 2 Lens", "Material": "Polyester", "Weather": "Water Resistant" }, image: "WT.jpg", videoId: "S_dr_2024" }
+                ]
+            }
+        ];
+
+        // Global State
+        const manifestIds = new Set();
+        let currentInspectedItem = null;
+        let activeTab = 'hardware';
+
+        // Utility Maps to find items quickly
+        const itemMap = new Map();
+        HARDWARE_AUDIT.forEach(phase => {
+            phase.items.forEach(item => itemMap.set(item.id, item));
+        });
+
+        // Initialize UI
+        function init() {
+            renderGrid();
+            startClock();
+        }
+
+        // Clock Simulation
+        function startClock() {
+            const clockEl = document.getElementById('utc-clock');
+            setInterval(() => {
+                const now = new Date();
+                clockEl.textContent = `${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}:${now.getUTCSeconds().toString().padStart(2, '0')} UTC`;
+            }, 1000);
+        }
+
+        // Tab Switching Logic
+        function switchTab(tab) {
+            activeTab = tab;
+            
+            document.querySelectorAll('.nav-tab').forEach(el => {
+                if(el.dataset.tab === tab) {
+                    el.classList.add('text-alert', 'font-bold');
+                    el.classList.remove('text-onyx/50');
+                } else {
+                    el.classList.remove('text-alert', 'font-bold');
+                    el.classList.add('text-onyx/50');
+                }
+            });
+
+            document.getElementById('view-hardware').classList.add('hidden');
+            document.getElementById('view-configuration').classList.add('hidden');
+            document.getElementById('view-deployment').classList.add('hidden');
+
+            const activeView = document.getElementById(`view-${tab}`);
+            activeView.classList.remove('hidden');
+            activeView.style.animation = 'none';
+            activeView.offsetHeight;
+            activeView.style.animation = null; 
+
+            if(tab === 'configuration') renderConfiguration();
+            if(tab === 'deployment') renderDeployment();
+            
+            updateUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Render Hardware Grid (Phase 01)
+        function renderGrid() {
+            const gridEl = document.getElementById('hardware-grid');
+            let html = '';
+            let globalDelay = 0;
+
+            HARDWARE_AUDIT.forEach(phase => {
+                html += `
+                <div class="border-b border-onyx/10 flex flex-col lg:flex-row relative">
+                    <div class="lg:w-1/4 xl:w-1/5 p-6 lg:p-12 border-b lg:border-b-0 lg:border-r border-onyx/10 relative overflow-hidden group/sidebar bg-white/40 backdrop-blur-sm">
+                        <div class="absolute inset-0 bg-gradient-to-br from-transparent to-alert/5 opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                        <div class="sticky top-32">
+                            <span class="font-mono text-5xl font-light text-onyx/10 block mb-6 transform -translate-x-2">${phase.phase}</span>
+                            <div class="flex items-center gap-3 text-alert mb-4">
+                                <div class="p-2 bg-alert/10 rounded-md"><i data-lucide="${phase.icon}" class="w-4 h-4"></i></div>
+                            </div>
+                            <h2 class="text-2xl font-black uppercase tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-r from-onyx to-onyx/60">${phase.classification}</h2>
+                        </div>
+                    </div>
+
+                    <div class="lg:w-3/4 xl:w-4/5 grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-onyx/10 relative">
+                        ${phase.items.map(item => {
+                            globalDelay += 1;
+                            return `
+                        <article onclick="openModal('${item.id}')" id="article-${item.id}" class="group relative flex flex-col cursor-pointer transition-all duration-500 bg-white/40 hover:bg-white hover:-translate-y-2 hover:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.1)] hover:z-10 opacity-0 animate-fade-in-up backdrop-blur-md" style="animation-delay: ${globalDelay * 0.1 + 0.3}s;">
+                            <div class="relative h-[400px] border-b border-onyx/5 overflow-hidden bg-gradient-to-br from-[#e5e5e0]/50 to-[#d5d5d0]/50">
+                                <img id="img-${item.id}" src="${item.image}" alt="${item.designation}" class="w-full h-full object-contain p-8 mix-blend-multiply transition-all duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] manifest-inactive-img group-hover:scale-110 group-hover:grayscale-0 group-hover:opacity-100">
+                                
+                                <div class="absolute top-6 left-6 flex flex-col gap-2 pointer-events-none z-10">
+                                    <span class="font-mono text-[9px] uppercase tracking-[0.2em] bg-white/90 backdrop-blur-sm px-3 py-1.5 text-onyx shadow-sm rounded-sm">${item.mfg}</span>
+                                    <span class="font-mono text-[9px] uppercase tracking-[0.2em] bg-onyx px-3 py-1.5 text-white shadow-md flex items-center gap-1.5 w-max rounded-sm">
+                                        <i data-lucide="target" class="w-2.5 h-2.5"></i> ${item.verdict}
+                                    </span>
+                                </div>
+
+                                <button onclick="toggleManifest(event, '${item.id}')" id="btn-${item.id}" class="absolute bottom-6 right-6 w-14 h-14 flex items-center justify-center transition-all duration-500 border bg-white/90 backdrop-blur-md border-onyx/10 text-onyx hover:bg-alert hover:border-alert hover:text-white hover:scale-110 hover:shadow-lg hover:shadow-alert/30 rounded-xl z-20 overflow-hidden">
+                                    <i data-lucide="plus" class="w-5 h-5 btn-icon-${item.id}"></i>
+                                </button>
+                            </div>
+
+                            <div class="p-8 lg:p-10 flex flex-col flex-1">
+                                <div class="flex justify-between items-start mb-8">
+                                    <h3 class="text-2xl lg:text-3xl font-black uppercase tracking-tighter leading-none pr-4 group-hover:text-alert transition-colors duration-300">${item.designation}</h3>
+                                    <div class="text-right flex-shrink-0">
+                                        <span class="block font-sans text-2xl lg:text-3xl font-black tracking-tighter leading-none">₹${item.valuation.toLocaleString()}</span>
+                                        <span class="font-mono text-[9px] text-onyx/40 uppercase tracking-[0.3em] mt-1.5 block">Base Value</span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-auto pt-6 border-t border-onyx/5 flex items-center justify-between">
+                                    <div class="flex items-center gap-8">
+                                        <div class="flex flex-col">
+                                            <span class="font-mono text-[9px] text-onyx/40 uppercase tracking-[0.3em] mb-1">Index</span>
+                                            <span class="font-sans text-sm font-bold flex items-center gap-1.5 bg-onyx/5 px-2 py-0.5 rounded-sm">
+                                                ${item.indexRating.toFixed(1)} <i data-lucide="star" class="w-3 h-3 fill-alert text-alert"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="font-mono text-[9px] text-onyx/40 uppercase tracking-[0.3em] mb-1">Volume</span>
+                                            <span class="font-sans text-sm font-bold bg-onyx/5 px-2 py-0.5 rounded-sm">${item.volumeDeployed}</span>
+                                        </div>
+                                    </div>
+                                    <div class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-2 text-onyx/40 group-hover:text-alert transition-colors duration-300 bg-white border border-onyx/5 px-3 py-1.5 rounded-full shadow-sm">
+                                        Audit <i data-lucide="arrow-up-right" class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        `;}).join('')}
+                    </div>
+                </div>
+                `;
+            });
+
+            gridEl.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        // Render Configuration Review (Phase 02)
+        function renderConfiguration() {
+            const listEl = document.getElementById('config-list');
+            if(manifestIds.size === 0) {
+                listEl.innerHTML = `
+                <div class="border border-onyx/10 p-20 text-center bg-white/50 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center shadow-sm">
+                    <i data-lucide="package-open" class="w-12 h-12 text-onyx/10 mb-6"></i>
+                    <p class="font-mono text-[11px] uppercase tracking-[0.3em] text-onyx/40">No units detected in current manifest.</p>
+                </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            let html = `<div class="grid grid-cols-1 gap-3">`;
+            let delay = 0;
+            manifestIds.forEach(id => {
+                const item = itemMap.get(id);
+                delay += 0.1;
+                html += `
+                <div class="bg-white/80 backdrop-blur-md border border-onyx/10 p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between group hover:border-alert/50 transition-all duration-500 opacity-0 animate-fade-in-up" style="animation-delay: ${delay}s;">
+                    <div class="flex items-center gap-6">
+                        <div class="w-24 h-24 bg-gradient-to-br from-[#e5e5e0]/50 to-[#d5d5d0]/50 rounded-xl overflow-hidden flex-shrink-0 relative group-hover:scale-105 transition-transform duration-500">
+                            <img src="${item.image}" class="w-full h-full object-contain p-2 mix-blend-multiply grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700">
+                        </div>
+                        <div>
+                            <span class="font-mono text-[10px] uppercase tracking-[0.3em] text-alert font-bold mb-1 block">${item.mfg}</span>
+                            <h4 class="font-black text-2xl uppercase tracking-tighter leading-none text-onyx group-hover:text-alert transition-colors duration-300">${item.designation}</h4>
+                            <div class="flex gap-4 mt-3"><span class="font-mono text-[9px] text-onyx/50 uppercase tracking-[0.2em] bg-onyx/5 px-2 py-1 rounded-sm border border-onyx/5">ID: ${item.id}</span></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between md:justify-end gap-8 w-full md:w-auto">
+                        <span class="font-sans text-3xl font-black tracking-tighter text-onyx">₹${item.valuation.toLocaleString()}</span>
+                        <button onclick="toggleManifest(event, '${item.id}'); renderConfiguration();" class="p-3.5 bg-alabaster border border-onyx/10 text-onyx rounded-xl hover:bg-red-500 hover:text-white transition-all duration-300 flex-shrink-0 group/btn">
+                            <i data-lucide="trash-2" class="w-5 h-5 group-hover/btn:scale-110 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+                `;
+            });
+            html += `</div>`;
+            listEl.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        // Render Deployment Manifest (Phase 03)
+        function renderDeployment() {
+            const depEl = document.getElementById('deployment-content');
+            if(manifestIds.size === 0) {
+                depEl.innerHTML = `
+                <div class="border border-onyx/10 p-20 text-center bg-white flex flex-col items-center justify-center rounded-2xl shadow-sm">
+                    <i data-lucide="alert-circle" class="w-12 h-12 text-onyx/10 mb-6"></i>
+                    <p class="font-mono text-[11px] uppercase tracking-[0.3em] text-onyx/40">Manifest empty. Deployment halted.</p>
+                </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            let dateStr = new Date().toISOString().replace('T', ' ').slice(0,19) + ' UTC';
+            let total = 0;
+            let listRows = '';
+            manifestIds.forEach(id => {
+                const item = itemMap.get(id);
+                total += item.valuation;
+                listRows += `
+                <div class="flex justify-between py-4 border-b border-onyx/5">
+                    <div>
+                        <span class="block text-onyx font-bold">${item.mfg} ${item.designation}</span>
+                        <span class="text-[10px] text-onyx/40 uppercase tracking-widest">UID: ${item.id}</span>
+                    </div>
+                    <span class="font-bold">₹${item.valuation.toLocaleString()}</span>
+                </div>`;
+            });
+
+            let html = `
+            <div class="bg-white border border-onyx/10 p-8 md:p-16 font-mono text-sm shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] relative overflow-hidden rounded-xl">
+                <div class="absolute top-0 right-0 p-8 opacity-10 rotate-12">
+                    <i data-lucide="shield-check" class="w-32 h-32"></i>
+                </div>
+                
+                <div class="flex flex-col md:flex-row justify-between mb-16 gap-8">
+                    <div>
+                        <p class="text-alert font-black mb-2">MANIFEST_EXPORT_v1.0</p>
+                        <p class="text-onyx/40">GEN_TIMESTAMP: ${dateStr}</p>
+                        <p class="text-onyx/40">AUTH_STATUS: VALIDATED</p>
+                    </div>
+                    <div class="text-left md:text-right">
+                        <p class="font-bold uppercase tracking-widest mb-2">GEAR.FINDER SOLUTIONS</p>
+                        <p class="text-onyx/40">HARDWARE AUDIT DIVISION</p>
+                        <p class="text-onyx/40">LOGISTICS UNIT ALPHA</p>
+                    </div>
+                </div>
+
+                <div class="mb-16">
+                    <p class="uppercase tracking-[0.3em] text-[10px] text-onyx/30 mb-8 border-b border-onyx/10 pb-4">Selected Unit Inventory</p>
+                    ${listRows}
+                </div>
+
+                <div class="flex flex-col md:flex-row justify-between items-end gap-12">
+                    <div class="w-full md:w-64">
+                        <p class="text-[10px] text-onyx/30 uppercase tracking-[0.3em] mb-4">Authorization Hash</p>
+                        <div class="h-12 bg-onyx/5 rounded flex items-center px-4 overflow-hidden">
+                            <span class="text-[9px] text-onyx/40 break-all">FF77-0021-XA99-B012-MANIFEST-SECURE</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] text-onyx/30 uppercase tracking-[0.3em] mb-2">Total Project Valuation</p>
+                        <p class="text-5xl font-black tracking-tighter text-onyx mb-8">₹${total.toLocaleString()}</p>
+                        <button onclick="window.print()" class="px-8 py-4 bg-onyx text-white rounded-lg hover:bg-alert transition-all flex items-center gap-3">
+                            <i data-lucide="printer" class="w-4 h-4"></i>
+                            <span class="font-bold uppercase tracking-widest text-[10px]">Execute Print</span>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+            depEl.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        // Modal Logic with Motion Integration
+        function openModal(id) {
+            const item = itemMap.get(id);
+            currentInspectedItem = item;
+
+            // Reset media state to Still
+            toggleMedia('still');
+
+            document.getElementById('modal-id-tag').textContent = `Asset ID: ${item.id}`;
+            document.getElementById('modal-mfg').textContent = `Mfg: ${item.mfg}`;
+            document.getElementById('modal-rating').textContent = item.indexRating.toFixed(1);
+            document.getElementById('modal-title').textContent = item.designation;
+            document.getElementById('modal-analysis').textContent = item.analysis;
+            document.getElementById('modal-price').textContent = item.valuation.toLocaleString();
+            document.getElementById('modal-img').src = item.image;
+
+            const premTag = document.getElementById('modal-premium-tag');
+            if (item.isPremium) premTag.classList.remove('hidden');
+            else premTag.classList.add('hidden');
+
+            document.getElementById('modal-telemetry').innerHTML = Object.entries(item.telemetry).map(([key, val]) => `
+                <div class="bg-white p-5 flex flex-col gap-1 hover:bg-alabaster transition-colors">
+                    <span class="font-mono text-[9px] text-onyx/40 uppercase tracking-[0.2em] mb-1">${key}</span>
+                    <span class="font-sans text-sm font-bold text-onyx">${val}</span>
+                </div>
+            `).join('');
+
+            syncModalButtonUI(id);
+
+            const modal = document.getElementById('system-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.replace('modal-closed', 'modal-open');
+            content.classList.replace('modal-content-closed', 'modal-content-open');
+        }
+
+        function closeModal() {
+            currentInspectedItem = null;
+            // Stop video on close
+            document.getElementById('video-root').innerHTML = '';
+            const modal = document.getElementById('system-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.replace('modal-open', 'modal-closed');
+            content.classList.replace('modal-content-open', 'modal-content-closed');
+        }
+
+        // Video / Still Toggle Logic
+        function toggleMedia(type) {
+            const stillBtn = document.getElementById('media-still-btn');
+            const motionBtn = document.getElementById('media-motion-btn');
+            const videoWrapper = document.getElementById('modal-video-wrapper');
+            const videoRoot = document.getElementById('video-root');
+
+            if (type === 'motion' && currentInspectedItem) {
+                stillBtn.classList.remove('bg-onyx', 'text-white');
+                stillBtn.classList.add('text-onyx/50');
+                motionBtn.classList.add('bg-onyx', 'text-white');
+                motionBtn.classList.remove('text-onyx/50');
+                
+                videoWrapper.style.display = 'flex';
+                // Inject Responsive Iframe
+                videoRoot.innerHTML = `
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/${currentInspectedItem.videoId}?autoplay=1&mute=0&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                `;
+            } else {
+                motionBtn.classList.remove('bg-onyx', 'text-white');
+                motionBtn.classList.add('text-onyx/50');
+                stillBtn.classList.add('bg-onyx', 'text-white');
+                stillBtn.classList.remove('text-onyx/50');
+                
+                videoWrapper.style.display = 'none';
+                videoRoot.innerHTML = '';
+            }
+        }
+
+        function toggleManifest(e, id) {
+            if (e) e.stopPropagation();
+            if (manifestIds.has(id)) manifestIds.delete(id);
+            else manifestIds.add(id);
+            updateUI();
+        }
+
+        function updateUI() {
+            let totalValue = 0;
+            let totalUnits = 0;
+
+            itemMap.forEach((item, id) => {
+                const article = document.getElementById(`article-${id}`);
+                const img = document.getElementById(`img-${id}`);
+                const btn = document.getElementById(`btn-${id}`);
+                const isSelected = manifestIds.has(id);
+
+                if (isSelected) {
+                    totalValue += item.valuation;
+                    totalUnits++;
+                    if (article) {
+                        article.classList.replace('bg-white/40', 'bg-[#e5e5e0]/50');
+                        img.classList.replace('manifest-inactive-img', 'manifest-active-img');
+                        btn.className = `absolute bottom-6 right-6 w-14 h-14 flex items-center justify-center border-2 bg-onyx text-white rounded-xl z-20`;
+                        btn.innerHTML = `<i data-lucide="check" class="w-6 h-6"></i>`;
+                    }
+                } else {
+                    if (article) {
+                        article.classList.replace('bg-[#e5e5e0]/50', 'bg-white/40');
+                        img.classList.replace('manifest-active-img', 'manifest-inactive-img');
+                        btn.className = `absolute bottom-6 right-6 w-14 h-14 flex items-center justify-center border bg-white/90 text-onyx rounded-xl z-20`;
+                        btn.innerHTML = `<i data-lucide="plus" class="w-5 h-5"></i>`;
+                    }
+                }
+            });
+
+            document.getElementById('nav-manifest-units').textContent = `${totalUnits} Units`;
+            document.getElementById('bar-units').textContent = totalUnits;
+            document.getElementById('bar-value').textContent = `₹${totalValue.toLocaleString()}`;
+
+            const manifestBar = document.getElementById('manifest-bar');
+            if (totalUnits > 0 && activeTab === 'hardware') manifestBar.classList.replace('bar-hidden', 'bar-visible');
+            else manifestBar.classList.replace('bar-visible', 'bar-hidden');
+
+            if (currentInspectedItem) syncModalButtonUI(currentInspectedItem.id);
+            lucide.createIcons();
+        }
+
+        function syncModalButtonUI(id) {
+            const btn = document.getElementById('modal-action-btn');
+            const isSelected = manifestIds.has(id);
+            btn.onclick = () => toggleManifest(null, id);
+
+            if (isSelected) {
+                btn.className = `px-8 h-16 w-full sm:w-auto flex items-center justify-center gap-3 transition-all duration-300 border-2 rounded-xl bg-alabaster border-onyx/10 text-onyx hover:text-red-500 overflow-hidden relative group`;
+                btn.innerHTML = `<span class="font-mono text-[11px] font-bold uppercase tracking-[0.2em] relative z-10">Remove from Setup</span>`;
+            } else {
+                btn.className = `px-8 h-16 w-full sm:w-auto flex items-center justify-center gap-3 transition-all duration-300 border rounded-xl overflow-hidden relative group bg-onyx text-white`;
+                btn.innerHTML = `<span class="font-mono text-[11px] font-bold uppercase tracking-[0.2em] relative z-10">Add to Setup</span>`;
+            }
+            lucide.createIcons();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
